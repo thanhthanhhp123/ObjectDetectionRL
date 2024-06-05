@@ -405,42 +405,24 @@ class Agent():
         self.optimizer.step()
         
     def train(self, train_loader, verbose = False):
-        """
-        Use data in a train_loader to train an agent.
-        This train_loader must contain images for only one class
-        Each episode is done when this agent has interacted with all training images
-        Each episode is performed as following:
-        - Fetch a new training image
-        - The agent take an action to interacte with this image using epsilon-greedy policy
-          Each step will be pushed into experience replay
-          After each step, update the weights of this network once
-          The interaction finishes when triggered or up to 20 steps
-        - Update the target net after the whole episode is done
-        - Decrease epsilon
-        - Save Network
-        """
         xmin = 0.0
         xmax = 224.0
         ymin = 0.0
         ymax = 224.0
 
         for i_episode in range(self.num_episodes):
-            # Start i_episode
             print("Episode "+str(i_episode))
             img_id = 0
-            # Traverse every training image to do interaction
             for key, value in  train_loader.items():
                 
                 if verbose:
                     img_id += 1
                     print("Training on Img {}/{}".format(img_id, len(train_loader.items())))
                     
-                # fetch one image and ground_truth from train_loader
                 image, ground_truth_boxes = extract(key, train_loader)
                 original_image = image.clone()
                 ground_truth = ground_truth_boxes[0]
                 
-                # initialization setting
                 self.actions_history = torch.zeros((9,self.n_actions))
                 new_image = image
                 state = self.compose_state(image)
@@ -452,22 +434,17 @@ class Agent():
                 done = False
                 t = 0
                 
-                # interaction with environment (image)
                 while not done:
-                    # increase step count
                     t += 1
                     
-                    # take action according to epsilon-greedy policy
                     action = self.select_action(state, self.current_coord, ground_truth)
                     
-                    # if action ==0, trigger
                     if action == 0:
                         next_state = None
                         closest_gt = self.get_max_bdbox(ground_truth_boxes, self.current_coord)
                         reward = self.compute_trigger_reward(self.current_coord, closest_gt)
                         done = True
                     
-                    # if not, compute next coordinate
                     else:
                         self.actions_history = self.update_history(action)
                         new_equivalent_coord = self.calculate_position_box(self.current_coord, action)
@@ -476,7 +453,6 @@ class Agent():
                         new_ymin = self.rewrap(int(new_equivalent_coord[0])-16)
                         new_ymax = self.rewrap(int(new_equivalent_coord[1])+16)
                         
-                        # fetch new_image (a crop of whole image) according to new coordinate
                         new_image = original_image[:, new_xmin:new_xmax, new_ymin:new_ymax]
                         try:
                             new_image = transform(new_image)
@@ -487,30 +463,26 @@ class Agent():
                         closest_gt = self.get_max_bdbox(ground_truth_boxes, new_equivalent_coord)
                         reward = self.compute_reward(new_equivalent_coord, self.current_coord, closest_gt)
                         self.current_coord = new_equivalent_coord
-                    
-                    # tolerate
+
                     if t == 20:
                         done = True
                         
                     self.memory.push(state, int(action), next_state, reward)
 
-                    # Move to the next state
                     state = next_state
                     image = new_image
                     
-                    # Perform one step of the optimization (on the target network)
                     self.optimize_model(verbose)
                     
             
-            # update target net every TARGET_UPDATE episodes
             if i_episode % self.TARGET_UPDATE == 0:
                 self.target_net.load_state_dict(self.policy_net.state_dict())
 
-            # linearly decrease epsilon on first 5 episodes
+
             if i_episode < 5:
                 self.EPS -= 0.18
                 
-            # Save network every episode
+
             self.save_network()
 
             print('Complete')
@@ -533,31 +505,11 @@ class Agent():
     
     
     
-    ########################
-    # 5. Predict and evaluate functions
     def predict_image(self, image, plot=False, verbose=False):
-        """
-        Run agent on a single image, taking actions until 40 steps or triggered
-        The prediction process is following:
-        - Initialization
-        - Input state vector into policy net and get action
-        - Take action and step into new state
-        - Terminate if trigger or take up to 40 steps
-        ----------
-        Argument:
-        image                - Input image, should be resized to (224,224) first
-        plot                 - Bool variable, if True, plot all intermediate bounding box
-        verbose              - Bool variable, if True, print out intermediate bouding box and taken action
-        ---------
-        Return:
-        new_equivalent_coord - The final bounding box coordinates
-        cross_flag           - If it should apply cross on the image, if done with trigger, True; if done with 40 steps, False
-        steps                - how many steps it consumed
-        """
-        # set policy net to evaluation model, disable dropout
+
         self.policy_net.eval()
         
-        # initialization
+
         original_image = image.clone()
         self.actions_history = torch.zeros((9,self.n_actions))
         state = self.compose_state(image)
@@ -568,10 +520,8 @@ class Agent():
         done = False
         cross_flag = True
         
-        # start interaction
         while not done:
             steps += 1
-            # take action according to greedy policy
             action = self.select_action_model(state)
             
             if action == 0:
@@ -606,7 +556,6 @@ class Agent():
             if verbose:
                 print("Iteration:{} - Action:{} - Position:{}".format(steps, action, new_equivalent_coord))
             
-            # if plot, print out current bounding box
             if plot:
                 show_new_bdbox(original_image, new_equivalent_coord, color='b', count=steps)
                 
