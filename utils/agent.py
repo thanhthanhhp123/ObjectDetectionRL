@@ -546,7 +546,7 @@ class Agent():
                 next_state = self.compose_state(new_image)
                 self.current_coord = new_equivalent_coord
             
-            if steps == 40:
+            if steps == 15:
                 done = True
                 cross_flag = False
             
