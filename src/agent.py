@@ -188,7 +188,7 @@ class Agent(object):
     def compose_state(self, image):
         features = self.get_features(image)
         features = features.view(1, -1)
-        history_flatten = self.actions_history.view(1,-1)
+        history_flatten = self.actions_history.view(1,-1).to(self.device)
         state = torch.cat((features, history_flatten), 1)
         return state
     
