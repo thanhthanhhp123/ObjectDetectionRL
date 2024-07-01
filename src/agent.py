@@ -62,7 +62,10 @@ class Agent(object):
     def IOU(self, box1, box2):
         print('Box1:', box1, end=' ')
         print('Box2:', box2, end=' ')
-        box1_left, box1_right, box1_top, box1_bottom = box1
+        try:
+            box1_left, box1_right, box1_top, box1_bottom = box1
+        except:
+            print('Box1:', box1)
         box2_left, box2_right, box2_top, box2_bottom = box2
         
         inter_top = max(box1_top, box2_top)
