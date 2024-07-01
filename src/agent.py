@@ -64,7 +64,10 @@ class Agent(object):
             box1_left, box1_right, box1_top, box1_bottom = box1
         except:
             box1_left, box1_right, box1_top, box1_bottom = [0.0, 0.0, 0.0, 0.0]
-        box2_left, box2_right, box2_top, box2_bottom = box2
+        try:
+            box2_left, box2_right, box2_top, box2_bottom = box2
+        except:
+            print(box2)
         
         inter_top = max(box1_top, box2_top)
         inter_left = max(box1_left, box2_left)
