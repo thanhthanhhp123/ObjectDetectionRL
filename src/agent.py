@@ -246,7 +246,7 @@ class Agent(object):
             for key, value in train_loader.items():
                 image, ground_truth = extract(key, train_loader, device=self.device)
                 original_image = image.clone()
-                ground_truth = ground_truth
+                ground_truth = ground_truth[0]
 
                 self.actions_history = torch.zeros([9, self.n_actions])
                 new_image = image
