@@ -89,21 +89,6 @@ class Agent():
         Each box is represented by four elements vector: (left, right, top, bottom)
         Origin point of image system is on the top left
         """
-        box1_left, box1_right, box1_top, box1_bottom = box1
-        box2_left, box2_right, box2_top, box2_bottom = box2
-        
-        inter_top = max(box1_top, box2_top)
-        inter_left = max(box1_left, box2_left)
-        inter_bottom = min(box1_bottom, box2_bottom)
-        inter_right = min(box1_right, box2_right)
-        inter_area = max(((inter_right - inter_left) * (inter_bottom - inter_top)), 0)
-        
-        box1_area = (box1_right - box1_left) * (box1_bottom - box1_top)
-        box2_area = (box2_right - box2_left) * (box2_bottom - box2_top)
-        union_area = box1_area + box2_area - inter_area
-
-        iou = inter_area / union_area
-        return iou
 
     def compute_reward(self, actual_state, previous_state, ground_truth):
         """

@@ -1,5 +1,5 @@
-from models import *
-from tools import *
+from src.models import *
+from src.tools import *
 
 import random
 import torch
@@ -246,7 +246,7 @@ class Agent(object):
             for key, value in train_loader.items():
                 image, ground_truth = extract(key, train_loader, device=self.device)
                 original_image = image.clone()
-                ground_truth = ground_truth[0]
+                ground_truth = ground_truth
 
                 self.actions_history = torch.zeros([9, self.n_actions])
                 new_image = image
