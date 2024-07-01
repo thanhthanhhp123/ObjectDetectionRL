@@ -167,7 +167,7 @@ class Agent(object):
         action = predicted[0] # + 1
         return action
 
-    def rewap(self, coord):
+    def rewrap(self, coord):
         return min(max(0, coord), 224)
     
     def get_features(self, image):
