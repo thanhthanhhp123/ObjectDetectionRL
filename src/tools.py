@@ -3,7 +3,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
-from utils.config import *
+from config import *
 import pandas as pd
 import random
 import tqdm.notebook as tq
