@@ -200,14 +200,14 @@ class Agent(object):
 
         non_final_mask = torch.Tensor(tuple(map(lambda s: s is not None, batch.next_state))).bool()
         next_states = [s for s in batch.next_state if s is not None]
-        non_final_next_states = Variable(torch.cat(next_states)).type(Tensor)
-        state_batch = Variable(torch.cat(batch.state)).type(Tensor).to(self.device)
-        action_batch = Variable(torch.LongTensor(batch.action).view(-1,1)).type(LongTensor)
-        reward_batch = Variable(torch.FloatTensor(batch.reward).view(-1,1)).type(Tensor)
+        non_final_next_states = Variable(torch.cat(next_states))
+        state_batch = Variable(torch.cat(batch.state)).to(self.device)
+        action_batch = Variable(torch.LongTensor(batch.action).view(-1,1))
+        reward_batch = Variable(torch.FloatTensor(batch.reward).view(-1,1))
 
         state_action_values = self.policy_net(state_batch).gather(1, action_batch)
         
-        next_state_values = Variable(torch.zeros(self.BATCH_SIZE, 1).type(Tensor)) 
+        next_state_values = Variable(torch.zeros(self.BATCH_SIZE, 1))
 
         non_final_next_states = non_final_next_states.to(self.device) 
         
@@ -234,7 +234,7 @@ class Agent(object):
                            unit='episodes', total=self.episodes):
             
 
-            for key, value in train_loader.item():
+            for key, value in train_loader.items():
                 image, ground_truth = extract(key, train_loader, device=self.device)
                 original_image = image.clone()
                 ground_truth = ground_truth[0]
