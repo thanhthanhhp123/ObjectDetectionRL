@@ -95,6 +95,7 @@ def extract(index, loader):
         ymax = ( float(bndbox['ymax']) /  float(size['height']) ) * 224
 
         ground_truth_boxes.append([xmin, xmax, ymin, ymax])
+        print(ground_truth_boxes)
     return img, ground_truth_boxes
 
 

@@ -60,7 +60,6 @@ class Agent(object):
         return torch.load(self.save_path + 'model.pth')
     
     def IOU(self, box1, box2):
-        print(box2)
         box1_left, box1_right, box1_top, box1_bottom = box1
         box2_left, box2_right, box2_top, box2_bottom = box2
         
@@ -239,8 +238,7 @@ class Agent(object):
         ymin = 0.0
         ymax = 224.0
 
-        for i in tqdm.tqdm(range(self.episodes), desc='Training', 
-                           unit='episodes', total=self.episodes):
+        for i in range(self.episodes):
             
 
             for key, value in train_loader.items():
