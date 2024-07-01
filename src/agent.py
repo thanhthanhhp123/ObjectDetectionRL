@@ -63,7 +63,7 @@ class Agent(object):
         try:
             box1_left, box1_right, box1_top, box1_bottom = box1
         except:
-            print('Box1:', box1)
+            box1_left, box1_right, box1_top, box1_bottom = [0.0, 0.0, 0.0, 0.0]
         box2_left, box2_right, box2_top, box2_bottom = box2
         
         inter_top = max(box1_top, box2_top)
