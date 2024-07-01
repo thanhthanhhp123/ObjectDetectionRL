@@ -60,13 +60,21 @@ class Agent(object):
         return torch.load(self.save_path + 'model.pth')
     
     def IOU(self, box1, box2):
-        x1, y1, w1, h1 = box1
-        x2, y2, w2, h2 = box2
-        w_I = max(0, min(x1 + w1, x2 + w2) - max(x1, x2))
-        h_I = max(0, min(y1 + h1, y2 + h2) - max(y1, y2))
-        I = w_I * h_I
-        U = w1 * h1 + w2 * h2 - I
-        return I / U
+        box1_left, box1_right, box1_top, box1_bottom = box1
+        box2_left, box2_right, box2_top, box2_bottom = box2
+        
+        inter_top = max(box1_top, box2_top)
+        inter_left = max(box1_left, box2_left)
+        inter_bottom = min(box1_bottom, box2_bottom)
+        inter_right = min(box1_right, box2_right)
+        inter_area = max(((inter_right - inter_left) * (inter_bottom - inter_top)), 0)
+        
+        box1_area = (box1_right - box1_left) * (box1_bottom - box1_top)
+        box2_area = (box2_right - box2_left) * (box2_bottom - box2_top)
+        union_area = box1_area + box2_area - inter_area
+
+        iou = inter_area / union_area
+        return iou
     
     def compute_reward(self, actual_state, previous_state, ground_truth):
         res = self.IOU(actual_state, ground_truth) - self.IOU(previous_state, ground_truth)
