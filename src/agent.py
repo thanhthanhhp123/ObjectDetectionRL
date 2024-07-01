@@ -60,7 +60,7 @@ class Agent(object):
         return torch.load(self.save_path + 'model.pth')
     
     def IOU(self, box1, box2):
-        print(box1, box2)
+        print(box2)
         box1_left, box1_right, box1_top, box1_bottom = box1
         box2_left, box2_right, box2_top, box2_bottom = box2
         
