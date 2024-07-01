@@ -83,7 +83,6 @@ def extract(index, loader, model = YOLO('yolov8n.pt'), device = 'cpu'):
     
     ground_truth_boxes = []
     ground_truth_boxes.append([x_min, x_max, y_min, y_max])
-    print(ground_truth_boxes)
 
     return img, ground_truth_boxes
 
